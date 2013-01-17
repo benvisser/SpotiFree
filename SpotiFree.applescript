@@ -29,23 +29,12 @@ repeat
 		if (isRunning() and isPlaying() and isAnAd()) then
 			try
 				-- Mute Spotify.
-				mute()
+				-- mute()
+				-- Skip Track
+				nextTrack()
+				log "skipping lil wayne track"
 			end try
-			repeat
-				try
-					-- Check if current track is an ad. Or if Spotify was paused during an advertisement.
-					if (isAnAd()) then
-						-- If Spotify was paused, or there is a second ad, this loop will continue to repeat.
-					else
-						-- If there's no more ads, pause for .5 seconds to let Spotify respond.
-						-- Then, unmute and exit the loop.
-						delay 0.5
-						unmute()
-						exit repeat
-					end if
-				end try
-				delay 0.3
-			end repeat
+			
 		end if
 	end try
 	-- This is how fast we are polling Spotify.
@@ -68,6 +57,16 @@ on mute()
 	return
 end mute
 
+on nextTrack()
+	try
+		tell application "Spotify"
+			-- next track
+			next track
+		end tell
+	end try
+	return
+end nextTrack
+
 on unmute()
 	try
 		tell application "Spotify"
@@ -86,16 +85,27 @@ on isAnAd()
 			set currentTrackPopularity to popularity of current track
 			-- Get the duration of current track and save it in a variable currentTrackDuration.
 			set currentTrackDuration to duration of current track
+			-- Get the artists of current track and save it in a variable currentTrackDuration.
+			set currentTrackArtists to artist of current track					
 		end tell
 	on error
 		return false
 	end try
+	
 	-- If current track's popularity is 0 and its duration is 40 seconds or less, then it's almost certainly an ad.
-	if (currentTrackPopularity = 0 and currentTrackDuration <= 40) then
+	-- if (currentTrackPopularity = 0 and currentTrackDuration <= 40) then
+	-- 	return true
+	-- else
+	-- 	return false
+	-- end if
+	
+	if currentTrackArtists contains "lil wayne" then 
 		return true
+		log "this little wayne track needs to be skipped"
 	else
 		return false
 	end if
+	
 end isAnAd
 
 on isPlaying()
